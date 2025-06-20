@@ -30,6 +30,10 @@
         let amis = amisRequire('amis/embed');
         let amisJSON = [[${amisJson}]];
         let schema = JSON.parse(amisJSON);
+        if(!schema.data){
+        	schema.data = {};
+        }
+        schema.data._mctx=_mctx;
         let amisScoped = amis.embed('#root', schema);
       })();
     </script>

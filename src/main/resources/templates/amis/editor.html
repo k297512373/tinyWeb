@@ -18,15 +18,13 @@
 		var mpage = [[${amisPage}]]||{};
 		
 		delete mpage.createTime;
-		console.log(mpage);
 		
 		layui.use(function(){
 			
 			function submitHandler(data,fun) {
-			
-				console.log(data);
-				mpage.pageTitle = data.title;
-				mpage.pageContent = JSON.stringify(data);
+				
+				mpage.pageTitle = data.schema.title;
+				mpage.pageContent = JSON.stringify(data.schema);
 				
 				$.post(prefix + "/save",mpage,res=>{
 					
@@ -35,6 +33,7 @@
 						fun(res);
 					}
 				});
+				
 			}
 			
 			let schema = JSON.parse(mpage.pageContent||`{
@@ -55,18 +54,8 @@
 	        "disabled": true
 	    }
 	}`);
-			localStorage.setItem('store', JSON.stringify({
-				pages: [
-	
-						{
-							"id": mpage.id+"",
-							"icon": "fa fa-file",
-							"path": "hello-world",
-							"label": "Hello world",
-							"schema": schema
-						}
-					]
-				}));
+			
+			localStorage.setItem('store', JSON.stringify({"schema": schema}));
 			
 			var mifarme = $("#magic_iframe");
 			 mifarme[0].onload=()=>{

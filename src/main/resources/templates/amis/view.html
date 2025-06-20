@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <title th:text="${amisTitle}"></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="stylesheet" th:href="@{/lib/amis/sdk.css}" />
+    <link rel="stylesheet" th:href="@{/lib/amis/helper.css}" />
+    <link rel="stylesheet" th:href="@{/lib/amis/iconfont.css}" />
+    <style>
+      html,
+      body,
+      .app-wrapper {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" class="app-wrapper"></div>
+    <script th:src="@{/lib/amis/sdk.js}"></script>
+    <script th:inline="javascript">
+    var _mctx = [[@{/}]];
+      (function () {
+        let amis = amisRequire('amis/embed');
+        let amisJSON = [[${amisJson}]];
+        let schema = JSON.parse(amisJSON);
+        let amisScoped = amis.embed('#root', schema);
+      })();
+    </script>
+  </body>
+</html>

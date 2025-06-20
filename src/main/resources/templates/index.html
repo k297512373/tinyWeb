@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>none</title>
+</head>
+<body class="gray-bg">
+    <script th:inline="javascript">
+      var ctx = [[@{/}]];
+      window.parent.frames.location.href = ctx + "index";
+    </script>
+</body>
+</html>

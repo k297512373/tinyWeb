@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>amis编辑页</title>
+	<link th:href="@{/lib/layui/css/layui.css}" rel="stylesheet">
+</head>
+
+<body style="height:100vh">
+	<iframe id="magic_iframe" class="RuoYi_iframe" width="100%" height="100%" frameborder="0"></iframe>
+	<script th:src="@{/lib/jquery/jquery-3.7.1.min.js}"></script>
+	<script th:src="@{/lib/layui/layui.js}"></script>
+	<script th:inline="javascript">
+		var ctx = [[@{/}]];
+		
+		var prefix = ctx + "amis";
+		
+		var mpage = [[${amisPage}]]||{};
+		
+		delete mpage.createTime;
+		console.log(mpage);
+		
+		layui.use(function(){
+			
+			function submitHandler(data,fun) {
+			
+				console.log(data);
+				mpage.pageTitle = data.title;
+				mpage.pageContent = JSON.stringify(data);
+				
+				$.post(prefix + "/save",mpage,res=>{
+					
+					if(fun){
+						res.code = [200][res.code]||res.code;
+						fun(res);
+					}
+				});
+			}
+			
+			let schema = JSON.parse(mpage.pageContent||`{
+	    "type": "page",
+	    "title": "Hello world",
+	    "body": [
+	        {
+	            "type": "tpl",
+	            "tpl": "初始页面",
+	            "wrapperComponent": "",
+	            "inline": false,
+	            "id": "u:51870a11109e"
+	        }
+	    ],
+	    "id": "u:ed84dc160476",
+	    "asideResizor": false,
+	    "pullRefresh": {
+	        "disabled": true
+	    }
+	}`);
+			localStorage.setItem('store', JSON.stringify({
+				pages: [
+	
+						{
+							"id": mpage.id+"",
+							"icon": "fa fa-file",
+							"path": "hello-world",
+							"label": "Hello world",
+							"schema": schema
+						}
+					]
+				}));
+			
+			var mifarme = $("#magic_iframe");
+			 mifarme[0].onload=()=>{
+				
+				var mwindow = mifarme[0].contentWindow;
+				mwindow._mctx = ctx;
+				console.log("加载完成");
+				
+				
+				mwindow._mPageSave = (data,fn) => {
+					submitHandler(data,fn);
+				};
+				
+				mwindow._mPageExit = () => {
+					console.log("退出")
+				};
+				
+			};
+			
+			mifarme.attr("src",ctx + "demo/index.html#/edit/0");
+		
+		});
+	</script>
+</body>
+
+</html>

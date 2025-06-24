@@ -24,4 +24,10 @@ public class MainController {
 		Object page = db.camel().table("amis_page").where().eq("page_type", "1").orderBy("page_weight").selectOne(null);
 		return amisController.view(Dict.parse(page).getInt("id"), mm);
 	}
+	
+	@GetMapping("/main")
+	public String main(ModelMap mm) {
+		Object page = db.camel().table("amis_page").where().eq("page_type", "4").orderBy("page_weight").selectOne(null);
+		return amisController.view(Dict.parse(page).getInt("id"), mm);
+	}
 }

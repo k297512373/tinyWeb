@@ -23,7 +23,6 @@
 			
 			function submitHandler(data,fun) {
 				
-				mpage.pageTitle = data.schema.title;
 				mpage.pageContent = JSON.stringify(data.schema);
 				
 				$.post(prefix + "/save",mpage,res=>{
@@ -54,6 +53,12 @@
 	        "disabled": true
 	    }
 	}`);
+	
+	if(schema.data == null){
+		schema.data = {};
+	}
+	
+	schema.data._mctx = ctx.substr(1)==""?ctx.substr(1):ctx.substr(1);
 			
 			localStorage.setItem('store', JSON.stringify({"schema": schema}));
 			
@@ -61,7 +66,7 @@
 			 mifarme[0].onload=()=>{
 				
 				var mwindow = mifarme[0].contentWindow;
-				mwindow._mctx = ctx;
+				mwindow._mctx = ctx.substr(1)==""?ctx.substr(1):ctx.substr(1)+"/";
 				console.log("加载完成");
 				
 				

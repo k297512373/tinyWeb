@@ -7,6 +7,7 @@ import org.springframework.web.servlet.ModelAndView;
 import cn.dev33.satoken.context.SaHolder;
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotRoleException;
+import cn.dev33.satoken.spring.SpringMVCUtil;
 import cn.dev33.satoken.util.SaResult;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
@@ -18,12 +19,14 @@ public class GlobalExceptionHandler{
 
 	@ExceptionHandler(NotLoginException.class)
 	public void handlerNotLoginException() {
-		SaHolder.getResponse().redirect("/login");
+		String ctx = SpringMVCUtil.getRequest().getContextPath();
+		SaHolder.getResponse().redirect(ctx+"/login");
 	}
 
 	@ExceptionHandler(NotRoleException.class)
 	public ModelAndView handlerNotRoleException() {
-		return new ModelAndView("/error/unauth");
+		String ctx = SpringMVCUtil.getRequest().getContextPath();
+		return new ModelAndView(ctx+"/error/unauth");
 	}
 
 	// 全局异常拦截

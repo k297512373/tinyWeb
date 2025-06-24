@@ -33,7 +33,7 @@
         if(!schema.data){
         	schema.data = {};
         }
-        schema.data._mctx=_mctx;
+        schema.data._mctx=_mctx.substr(1)==""?_mctx.substr(1):_mctx.substr(1);
         let amisScoped = amis.embed('#root', schema);
       })();
     </script>

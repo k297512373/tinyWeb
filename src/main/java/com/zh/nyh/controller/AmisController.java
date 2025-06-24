@@ -1,5 +1,7 @@
 package com.zh.nyh.controller;
 
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -12,6 +14,7 @@ import org.ssssssss.magicapi.modules.db.SQLModule;
 
 import com.zh.nyh.vo.AmisPage;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.util.SaResult;
 import cn.hutool.core.lang.Dict;
 
@@ -42,6 +45,9 @@ public class AmisController {
 		
 		if(amisPage.getId() == -1) {
 			amisPage.setId(null);
+			Dict user = Dict.parse(StpUtil.getSession().get("user"));
+			amisPage.setCreateBy(user.getStr("userName"));
+			amisPage.setCreateTime(new Date());
 		}
 		
 		int res = (int) db.camel().table(tname).primary("id").save(null, Dict.parse(amisPage));

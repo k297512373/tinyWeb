@@ -54,8 +54,10 @@ public class MagicSaInterceptor extends SaInterceptor implements ApplicationList
 				JSONObject page = new JSONObject(o);
 				JSONObject power = page.getJSONObject("pagePower");
 				
-				if(StrUtil.equals("any", power.getStr("power"))) {
+				if(power != null && StrUtil.equals("any", power.getStr("power"))) {
 					notMatchs.add("/amis/view/"+page.getStr("id"));
+					continue;
+				}else if(power==null) {
 					continue;
 				}
 				

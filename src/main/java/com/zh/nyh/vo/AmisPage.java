@@ -18,6 +18,7 @@ public class AmisPage {
 	private String pageContent;
 	/**页面权限*/
 	private String pagePower;
+	private Integer pageHid;
 	/**创建时间*/
 	private Date createTime;
 	/**创建人*/
@@ -76,6 +77,12 @@ public class AmisPage {
 	}
 	public void setCreateBy(String createBy) {
 		this.createBy = createBy;
+	}
+	public Integer getPageHid() {
+		return pageHid;
+	}
+	public void setPageHid(Integer pageHid) {
+		this.pageHid = pageHid;
 	}
 	
 }

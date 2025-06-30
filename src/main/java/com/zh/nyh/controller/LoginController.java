@@ -91,6 +91,8 @@ public class LoginController implements ApplicationListener<ContextRefreshedEven
 				.stream().map(it->it.get("roleKey"))
 				.collect(Collectors.toList());
 		
+		System.out.println(roles);
+		
 		StpUtil.login(sysUser.getId());
 		StpUtil.getSession().set("user", sysUser);
 		StpUtil.getSession().set("roles", roles);

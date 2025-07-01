@@ -108,8 +108,7 @@ public class LoginController implements ApplicationListener<ContextRefreshedEven
 		}
 		
 		//获取登录页
-		Object page = db.camel().table("amis_page").where().eq("page_type", "0").orderBy("page_weight").selectOne(null);
-		return new ModelAndView(amisController.view(Dict.parse(page).getInt("id"), mm));
+		return amisController.getTypeView("0", mm);
 	}
 	
 	@GetMapping("out")

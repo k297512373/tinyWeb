@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 import org.ssssssss.magicapi.modules.db.SQLModule;
 
 import com.zh.nyh.vo.AmisPage;
@@ -64,5 +65,16 @@ public class AmisController {
 			mm.put("amisTitle", amisPage.getPageTitle());
 		}
 		return prifx + "view";
+	}
+	
+	public ModelAndView getTypeView(String type,ModelMap mm) {
+		//根据页面类型获取页面，特殊的页面
+		Object page = db.camel().table("amis_page").where().eq("page_type", type).orderBy("page_weight").selectOne(null);
+		
+		if(page!=null && Dict.parse(page).getInt("id") != null) {
+			return new ModelAndView(view(Dict.parse(page).getInt("id"), mm));
+		}
+		
+		return null;
 	}
 }

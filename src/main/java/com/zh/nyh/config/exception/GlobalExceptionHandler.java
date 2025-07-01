@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.ModelAndView;
 
+
 import cn.dev33.satoken.context.SaHolder;
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotRoleException;
@@ -16,7 +17,7 @@ import cn.hutool.log.LogFactory;
 public class GlobalExceptionHandler{
 
 	Log log = LogFactory.get();
-
+	
 	@ExceptionHandler(NotLoginException.class)
 	public void handlerNotLoginException() {
 		String ctx = SpringMVCUtil.getRequest().getContextPath();

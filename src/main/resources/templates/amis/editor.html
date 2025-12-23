@@ -58,7 +58,7 @@
 		schema.data = {};
 	}
 	
-	schema.data._mctx = ctx.substr(1)==""?ctx.substr(1):ctx.substr(1);
+	schema.data._mctx = ctx.substr(1);
 			
 			localStorage.setItem('store', JSON.stringify({"schema": schema}));
 			

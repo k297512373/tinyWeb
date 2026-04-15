@@ -75,7 +75,12 @@
 				};
 				
 				mwindow._mPageExit = () => {
-					window.close();
+					var closed = false;
+					try { window.close(); closed = window.closed; } catch(e) {}
+					// window.close() 仅对 JS 打开的窗口有效，无法关闭时显示提示
+					if (!closed) {
+						mwindow.document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-size:18px;color:#666;">已退出编辑器，请关闭此页面</div>';
+					}
 				};
 				
 			};

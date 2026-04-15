@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="format-detection" content="telephone=no"/>
+	<meta name="viewport" content="initial-scale=1,user-scalable=no,width=device-width,viewport-fit=cover">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>amis-editor Demo</title>
+	<link rel="stylesheet" href="https://bce.bdstatic.com/iconfont/iconfont.css"/>
+	<link rel="stylesheet" href="https://unpkg.com/animate.css@4.1.1/animate.min.css"/>
+	<link data-react-helmet="true" rel="shortcut icon" href="https://avatars.githubusercontent.com/u/78204817?s=200&v=4"/>
+	<link th:href="@{/demo/css/index.339a6c63.css}" rel="stylesheet">
+	<script th:inline="javascript">
+		var ctx = [[@{/}]];
+		// 修正 webpack publicPath，使动态 chunk 加载包含 context-path
+		window.__demo_prefix__ = ctx + "demo/";
+		// 修正 Monaco Editor worker 路径
+		window.MonacoEnvironment = {
+			getWorkerUrl: function(moduleId, label) {
+				if (label === 'json') return ctx + 'demo/json.worker.js';
+				if (label === 'css') return ctx + 'demo/css.worker.js';
+				if (label === 'html') return ctx + 'demo/html.worker.js';
+				if (label === 'typescript' || label === 'ts') return ctx + 'demo/ts.worker.js';
+				return ctx + 'demo/editor.worker.js';
+			}
+		};
+	</script>
+</head>
+<body>
+	<div id="root"></div>
+	<script defer th:src="@{/demo/scripts/chunk/index.5e2c6cc9.js}"></script>
+</body>
+</html>

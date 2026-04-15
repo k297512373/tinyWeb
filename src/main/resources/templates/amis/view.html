@@ -29,13 +29,136 @@
     var _mctx = [[@{/}]];
       (function () {
         let amis = amisRequire('amis/embed');
+
+        // ===== context-path 自动适配 =====
+        var ctx = _mctx; // 带前后斜杠，如 "/tiny/"
+
+        /**
+         * 判断 URL 是否需要添加 context-path 前缀
+         * 排除：绝对URL(http/https)、协议无关URL(//)、data:、javascript:、已含ctx的
+         */
+        function shouldPrefix(url) {
+          if (!url || typeof url !== 'string') return false;
+          var trimmed = url.trim();
+          var lower = trimmed.toLowerCase();
+          if (lower.length === 0) return false;
+          if (lower.startsWith('http:') || lower.startsWith('https:') || lower.startsWith('//')) return false;
+          if (lower.startsWith('data:') || lower.startsWith('javascript:') || lower.startsWith('mailto:')) return false;
+          // 兼容旧的手动拼接：如果 URL 已经以 context-path 开头，跳过
+          var ctxPath = ctx.toLowerCase(); // "/tiny/"
+          if (lower.startsWith(ctxPath)) return false;
+          // 也匹配不带尾斜杠的情况："/tiny/api" 不会被重复加前缀
+          var ctxBase = ctxPath.replace(/\/$/, ''); // "/tiny"
+          if (lower.startsWith(ctxBase + '/')) return false;
+          return true;
+        }
+
+        /**
+         * 为 URL 添加 context-path 前缀
+         * /api/xxx  -> /tiny/api/xxx
+         * api/xxx   -> /tiny/api/xxx
+         */
+        function prefixUrl(url) {
+          if (!shouldPrefix(url)) return url;
+          var path = url.startsWith('/') ? url.substring(1) : url;
+          return ctx + path;
+        }
+
+        /**
+         * 自定义 fetcher：API 请求自动添加 context-path
+         * amis 的 wrapFetcher 在调用我们之前已用 buildApi 处理好：
+         *   - URL 中的模板变量已解析
+         *   - api.data 已根据 dataType 转换为 FormData/字符串/对象
+         *   - api.headers 已设置好 Content-Type
+         * 我们只需修改 URL，然后按标准格式发请求并返回
+         */
+        function ctxFetcher(api) {
+          // 添加 context-path 前缀
+          api.url = prefixUrl(api.url);
+
+          var method = (api.method || 'get').toUpperCase();
+          var fetchOptions = {
+            method: method,
+            headers: api.headers || {}
+          };
+
+          // GET/HEAD 请求：数据附加到 URL 查询参数
+          if (method === 'GET' || method === 'HEAD') {
+            if (api.data && typeof api.data === 'object') {
+              var params = new URLSearchParams();
+              Object.keys(api.data).forEach(function(k) {
+                var v = api.data[k];
+                if (v !== undefined && v !== null) params.append(k, v);
+              });
+              var qs = params.toString();
+              if (qs) api.url += (api.url.indexOf('?') > -1 ? '&' : '?') + qs;
+            }
+          } else {
+            // POST/PUT/PATCH/DELETE：发送 body
+            if (api.data !== undefined && api.data !== null) {
+              if (typeof api.data === 'string') {
+                fetchOptions.body = api.data;
+              } else if (api.data instanceof FormData) {
+                fetchOptions.body = api.data;
+                // FormData 由浏览器自动设置 Content-Type（含 boundary）
+                delete fetchOptions.headers['Content-Type'];
+                delete fetchOptions.headers['content-type'];
+              } else {
+                fetchOptions.body = JSON.stringify(api.data);
+                if (!fetchOptions.headers['Content-Type'] && !fetchOptions.headers['content-type']) {
+                  fetchOptions.headers['Content-Type'] = 'application/json';
+                }
+              }
+            }
+          }
+
+          return window.fetch(api.url, fetchOptions).then(function(response) {
+            return response.json().then(function(data) {
+              return {
+                ok: response.ok,
+                status: response.status,
+                headers: response.headers,
+                data: data
+              };
+            });
+          });
+        }
+
+        // amis env 配置
+        var amisEnv = {
+          fetcher: ctxFetcher,
+
+          // 自定义 jumpTo：按钮/链接跳转自动添加 context-path
+          jumpTo: function(to, action) {
+            if (shouldPrefix(to)) {
+              to = prefixUrl(to);
+            }
+            window.location.href = to;
+          },
+
+          // 自定义 updateLocation：地址栏更新自动添加 context-path
+          updateLocation: function(location, replace) {
+            if (shouldPrefix(location)) {
+              location = prefixUrl(location);
+            }
+            if (replace) {
+              window.location.replace(location);
+            } else {
+              window.location.href = location;
+            }
+          }
+        };
+
         let amisJSON = [[${amisJson}]];
         let schema = JSON.parse(amisJSON);
         if(!schema.data){
         	schema.data = {};
         }
-        schema.data._mctx=_mctx.substr(1);
-        let amisScoped = amis.embed('#root', schema);
+        // 注入 _mctx 变量，供页面 JSON 中的表达式使用
+        // 如 iframe src: ${_mctx+"main"} -> /tiny/main
+        // fetcher/jumpTo 会自动跳过已含 ctx 前缀的 URL，不会重复添加
+        schema.data._mctx = ctx; // "/tiny/"
+        let amisScoped = amis.embed('#root', schema, {}, amisEnv);
       })();
     </script>
   </body>

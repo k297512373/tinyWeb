@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.ui.ModelMap;
@@ -35,6 +36,9 @@ import cn.hutool.core.util.StrUtil;
 public class LoginController implements ApplicationListener<ContextRefreshedEvent>{
 	
 	private final TimedCache<String, AbstractCaptcha> captchaCache = CacheUtil.newTimedCache(60*1000);
+	
+	@Value("${server.servlet.context-path:}")
+	private String contextPath;
 	
 	@Autowired
 	private SQLModule db;
@@ -104,7 +108,7 @@ public class LoginController implements ApplicationListener<ContextRefreshedEven
 	public ModelAndView login(ModelMap mm) {
 		
 		if(StpUtil.isLogin()) {
-			SaHolder.getResponse().redirect("/index");
+			SaHolder.getResponse().redirect(contextPath + "/index");
 		}
 		
 		//获取登录页
@@ -114,7 +118,7 @@ public class LoginController implements ApplicationListener<ContextRefreshedEven
 	@GetMapping("out")
 	public void loginout(ModelMap mm) {
 		StpUtil.logout();
-		SaHolder.getResponse().redirect("/login");
+		SaHolder.getResponse().redirect(contextPath + "/login");
 	}
 	
 }

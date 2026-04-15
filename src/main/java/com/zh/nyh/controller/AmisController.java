@@ -30,6 +30,12 @@ public class AmisController {
 	@Autowired
 	private SQLModule db;
 	
+	/** editor页面（iframe加载此接口） */
+	@GetMapping("/demo/index.html")
+	public String demoIndex() {
+		return "demo/editor-index";
+	}
+
 	@GetMapping("/editor/{id}")
 	public String editor(@PathVariable Integer id,ModelMap mm) {
 		if(id > -1) {
